@@ -50,11 +50,13 @@ jobs:
           name: dist
           path: dist
 
-      - name: Per FTP zu IONOS hochladen
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Per SFTP zu IONOS hochladen
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
-          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_SERVER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          port: 22
+          local_path: './dist/*'
+          remote_path: ${{ secrets.FTP_SERVER_DIR }}
+          sftp_only: true
