@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Bestehende Dateien/Ordner direkt ausliefern
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Alles andere auf index.html umleiten, damit Angular-Routing greift
+RewriteRule ^ index.html [L]

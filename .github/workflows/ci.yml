@@ -29,3 +29,32 @@ jobs:
 
       - name: Tests (Headless Chrome, einmalig)
         run: npm run test:ci
+
+      # Build-Output für den nächsten Job (deploy) zwischenspeichern
+      - name: Build-Artefakt hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/cicd-demo/browser
+
+  deploy:
+    needs: build-and-test
+    # Nur deployen, wenn der Push direkt auf main war (nicht bei reinen Pull Requests)
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build-Artefakt herunterladen
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Per FTP zu IONOS hochladen
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
